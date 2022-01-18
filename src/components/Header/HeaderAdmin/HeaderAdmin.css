@@ -1,0 +1,174 @@
+.side-menu{
+    position: fixed;
+    width: 300px;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 30px 20px;
+    transition: width .2s ease-in;
+   
+    padding: "30px 20px";
+    margin: 0px
+}
+
+.side-menu .topSection{
+    position: relative;
+}
+.side-menu .topSection .Logo{
+  
+    overflow: hidden;
+    display: inline-block;
+}
+.side-menu .topSection .togglemenubtn{
+    color: #14163c;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+.side-menu.inactive .topSection .togglemenubtn {
+    top: -30%;
+    margin-right: 10px;
+  
+}
+.side-menu.inactive .topSection .Logo img{
+    width: 100%;
+    height: 100%;
+    margin-right: 10px;
+    margin-top: 50%;
+}
+.side-menu .serachDiv{
+    color: #fff;
+    position: relative;
+}
+.side-menu .serachDiv .search-btn{
+    width: 40px;
+    height: 35px;
+    position: absolute;
+    background: transparent;
+    border: 0;
+    font-size: 20px;
+    color: #666;
+}
+.side-menu .serachDiv input[type=text]{
+    border: 0;
+    outline: none;
+    height: 35px;
+    background: #14163c;
+    border-radius: 5px;
+    display: block;
+    margin: 50px 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 40px;
+    color: #666;
+}
+.divider{
+    width: 100%;
+    height: 1px;
+    border-radius: 1px;
+    background: #14163c;
+}
+.side-menu.inactive{
+    width: 80px;
+}
+.side-menu .main-menu .menu-item{
+    color: #333;
+    text-decoration: none;
+    font-size: 15px;
+    display: block;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.side-menu .main-menu .menu-item.active{
+    background: #333;
+    border-radius: 5px;
+    color: #fff;
+}
+
+
+.side-menu .main-menu{
+    margin: 5px 0;
+    position: relative;
+    max-height: 250px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+
+.side-menu .main-menu .menu-item .menu-icon{
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    line-height: 40px;
+    text-align: center;
+}
+
+.side-menu .main-menu .menu-item span{
+    position: absolute;
+    display: inline-block;
+    line-height: 40px;
+    opacity: 1;
+    transition: opacity .2s ease-in;
+}
+
+.side-menu.inactive .main-menu .menu-item span{
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+
+
+
+
+.side-menu .main-menu .sub-menu a{
+    display: block;
+    margin: 5px 0;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #333;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
+.container{
+    margin-left: 300px;
+    transition: margin-left .2s ease-in;
+    border-radius: 20px;
+ 
+    box-sizing: border-box;
+}
+
+.container.inactive{
+    margin-left: 80px;
+}
+/* width */
+::-webkit-scrollbar {
+    width: 3px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+    display: none;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #333; 
+    border-radius: 10px;
+    display: none;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #333; 
+    display: block;
+  }
