@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
         position: 'absolute',
         top: theme.spacing(5),
         background:'transparent',
-        width:"400px",     
+        width:"600px",     
   backdropFilter: "blur(8.5px)",
   webkitBackdropFilter:" blur(8.5px)",
   

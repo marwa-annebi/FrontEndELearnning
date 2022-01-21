@@ -4,7 +4,7 @@ import Header from './Header';
 import "./HeaderAdmin.css"
 import { useState } from 'react';
 import './HeaderAdmin.css';
-import { CssBaseline, createMuiTheme, ThemeProvider } from "@material-ui/core";
+import { CssBaseline, createMuiTheme, ThemeProvider, makeStyles } from "@material-ui/core";
 import Users from './../../pages/Admin/Users'
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
@@ -37,29 +37,28 @@ const theme = createMuiTheme({
   },
 });
 
+const useStyles = makeStyles({
+  appMain: {
+    paddingLeft: '320px',
+    width: '100%'
+  }
+})
 const Navbar = () => {
-  
+  const classes = useStyles();
   const [inactive, setInactive] = useState(false);
 
   return (
-    <div>
-      <ThemeProvider theme={theme}>
-        <SideMenu
-          onCollapse={(inactive) => {
-            console.log(inactive);
-            setInactive(inactive);
-          }}
-        />
-        <div className={`container ${inactive ? "inactive" : ""}`}>
-          <div>
+    <ThemeProvider theme={theme}>
+    <SideMenu />
+    <div className={classes.appMain}>
             <Header />
            <Users />
           </div>
-        </div>
+     
 
         <CssBaseline />
-      </ThemeProvider>
-    </div>
+
+    </ThemeProvider>
   );
 }
 

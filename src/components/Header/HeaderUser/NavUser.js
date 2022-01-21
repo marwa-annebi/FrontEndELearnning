@@ -183,7 +183,7 @@ const logoutHandler = () =>{
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" />
+                <Avatar src={userInfo.} />
               </IconButton>
             </Tooltip>
             <Menu
