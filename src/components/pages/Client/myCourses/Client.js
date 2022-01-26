@@ -1,16 +1,14 @@
-import React, { useState } from 'react'
-import Courses from "./Courses.js"
-import NavUser from "../../../../components/Header/HeaderUser/NavUser.js"
-
+import React, { useState } from "react";
+import NavUser from "../../../Header/HeaderUser/NavUser.js";
+import MyNotes from "./MyNotes.js";
 
 const Client = () => {
+  return (
+    <div>
+      <NavUser />
+      <MyNotes />
+    </div>
+  );
+};
 
-    return (
-        <div>
-            <NavUser />
-            <Courses />
-        </div>
-    )
-}
-
-export default Client
+export default Client;

@@ -10,6 +10,8 @@ import { useState } from "react";
 import { Form } from "react-bootstrap";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+
 import axios from "axios";
 import validator from "validator";
 import LinearBuffer from "./../../../LinearBuffer";
@@ -17,6 +19,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { register } from "../../../../actions/userActions";
 import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -43,7 +46,6 @@ function Register() {
     if (password !== confirmPassword) {
       setmessage("Passwords do not match");
     } else {
-      
       dispatch(register(first_name, email, password, pic));
     }
   };
@@ -78,6 +80,8 @@ function Register() {
       const data = new FormData();
       data.append("file", pics);
       data.append("upload_preset", "3almni");
+      data.append("cloud_name", "dknkfvzye");
+
       fetch("https://api.cloudinary.com/v1_1/dknkfvzye/upload", {
         method: "POST",
         body: data,
@@ -98,37 +102,31 @@ function Register() {
     <div className="body">
       <Container bg={bg}>
         <Wrapper>
+        <Link to='/'>
+      <ArrowBackIosIcon color="secondary" style={{marginLeft:"10px",marginTop:"10px"}} />
+      </Link>
           {Validation && (
             <Alert severity="success" color="info">
               {Validation}
             </Alert>
           )}
           {error && (
-            <Snackbar
-              open={openerror}
-              autoHideDuration={3000}
-              onClose={handleCloseError}
-            >
-              <Alert
-                onClose={handleClose}
-                severity="error"
+                <Alert severity="error"
                 sx={{ width: "100%" }}
-              >
-                {error}
-              </Alert>
-            </Snackbar>
+                 >
+       {error}
+     </Alert>
           )}
 
           {message && (
-            <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
               <Alert
-                onClose={handleClose}
+             
                 severity="error"
                 sx={{ width: "100%" }}
               >
                 {message}
               </Alert>
-            </Snackbar>
+     
           )}
           {loading && <LinearBuffer />}
           <div className="main">

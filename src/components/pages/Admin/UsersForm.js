@@ -1,23 +1,23 @@
 import { Grid, makeStyles } from "@material-ui/core";
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import { TextField } from "@material-ui/core";
 import { useForm, Form } from "./../../useForm";
 import controls from "./../../Controls/controls";
 
-
 export default function UsersForm(props) {
   const initialFValues = {
     id: 0,
-    first_name: '',
-    email: '',
-    password: '',
+    first_name: "",
+    email: "",
+    password: "",
     isAdmin: false,
     isTeacher: false,
-}
+  };
+
   const { addOrEdit, recordForEdit } = props;
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ("first_name" in fieldValues)
+    /*  if ("first_name" in fieldValues)
       temp.first_name = fieldValues.first_name ? "" : "This field is required.";
     if ("email" in fieldValues)
       temp.email = /$^|.+@.+..+/.test(fieldValues.email)
@@ -25,8 +25,8 @@ export default function UsersForm(props) {
         : "Email is not valid.";
     if ("password" in fieldValues)
       temp.password =
-        fieldValues.password.length > 9 ? "" : "Minimum 10 required.";
-
+        fieldValues.password.length > 9 ? "" : "Minimum 3 required.";
+ */
     setErrors({
       ...temp,
     });
@@ -44,11 +44,10 @@ export default function UsersForm(props) {
   };
   useEffect(() => {
     if (recordForEdit != null)
-        setValues({
-            ...recordForEdit
-        })
-}, [recordForEdit])
-
+      setValues({
+        ...recordForEdit,
+      });
+  }, [recordForEdit]);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -56,36 +55,39 @@ export default function UsersForm(props) {
         <Grid item xs={6}>
           <controls.Input
             label="First name"
+            name="first_name"
             value={values.first_name}
             onChange={handleInputChange}
             error={errors.first_name}
           ></controls.Input>
           <controls.Input
             label="email"
-        value={values.email}
+            name="email"
+            value={values.email}
             onChange={handleInputChange}
             error={errors.email}
           ></controls.Input>
-
+{!recordForEdit &&
           <controls.Input
             label="password"
+            name="password"
             value={values.password}
             onChange={handleInputChange}
             error={errors.password}
-          ></controls.Input>
+          ></controls.Input>}
         </Grid>
 
         <Grid item xs={6}>
           <controls.Checkbox
             name="isAdmin"
             label="Admin"
-            value={values.isAdmin}
+            defaultValue={values.isAdmin}
             onChange={handleInputChange}
           />
           <controls.Checkbox
             name="isTeacher"
             label="Teacher"
-            value={values.isTeacher}
+            defaultValue={values.isTeacher}
             onChange={handleInputChange}
           />
           <div>

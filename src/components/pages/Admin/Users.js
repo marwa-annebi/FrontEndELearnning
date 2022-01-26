@@ -11,7 +11,6 @@ import {
   InputAdornment,
 } from "@material-ui/core";
 import { Form } from "react-bootstrap";
-import CheckIcon from "@mui/icons-material/Check";
 import PeopleOutlineTwoToneIcon from "@material-ui/icons/PeopleOutlineTwoTone";
 import controls from "./../../Controls/controls";
 import AddIcon from "@material-ui/icons/Add";
@@ -23,6 +22,8 @@ import axios from "axios";
 import { Table, TableCell, TableRow } from "@mui/material";
 import ConfirmDialog from "../../ConfirmDialog";
 import Notification from "../../Notification";
+import UpdateUser from "./UpdateUser";
+import { useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   pageContent: {
     margin: theme.spacing(5),
@@ -73,6 +74,8 @@ const Users = () => {
 
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } =
     useTable(userList, headCells, filterFn);
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
 
   const [openPopup, setOpenPopup] = useState(false);
   const [recordForEdit, setRecordForEdit] = useState(null);
@@ -107,13 +110,23 @@ const Users = () => {
       type: "error",
     });
   };
-  const addOrEdit = (user, resetForm) => {
-    if (user._id == 0) axios.post("/api/users/add", user);
-    else axios.put("api/users/update/${id}", user);
+  const addOrEdit = (userInfo, resetForm,id) => {
+    console.log(userInfo);
+
+    if (userInfo.id == 0) axios.post("/api/users/add", userInfo);
+    else{ 
+
+      axios.put(`api/users/update/${id}`, userInfo);}
+
     resetForm();
     setRecordForEdit(null);
     setOpenPopup(false);
     loadUsers();
+    setNotify({
+      isOpen: true,
+      message: "Submitted Successfully",
+      type: "success",
+    });
   };
   const openInPopup = (item) => {
     setRecordForEdit(item);
@@ -219,14 +232,12 @@ const Users = () => {
       >
         <UsersForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
       </Popup>
-      <Notification
-                notify={notify}
-                setNotify={setNotify}
-            />
-            <ConfirmDialog
-                confirmDialog={confirmDialog}
-                setConfirmDialog={setConfirmDialog}
-            />
+
+      <Notification notify={notify} setNotify={setNotify} />
+      <ConfirmDialog
+        confirmDialog={confirmDialog}
+        setConfirmDialog={setConfirmDialog}
+      />
     </>
   );
 };
