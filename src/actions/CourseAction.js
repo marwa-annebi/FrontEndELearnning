@@ -15,14 +15,6 @@ import {
 import axios from "axios";
 
 export const listNotes = () => async (dispatch, getState) => {
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-
-  const { users } = await axios.get("/api/users/users", config);
-  console.log(users);
   try {
     dispatch({
       type: NOTES_LIST_REQUEST,
@@ -56,47 +48,45 @@ export const listNotes = () => async (dispatch, getState) => {
   }
 };
 
-export const createNoteAction = (title, content, category) => async (
-  dispatch,
-  getState
-) => {
-  try {
-    dispatch({
-      type: NOTES_CREATE_REQUEST,
-    });
+export const createNoteAction =
+  (title, content, category,imageUrl,file) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: NOTES_CREATE_REQUEST,
+      });
 
-    const {
-      userLogin: { userInfo },
-    } = getState();
+      const {
+        userLogin: { userInfo },
+      } = getState();
 
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    };
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
 
-    const { data } = await axios.post(
-      `/api/courses/create`,
-      { title, content, category },
-      config
-    );
+      const { data } = await axios.post(
+        `/api/courses/create`,
+        { title, content, category,imageUrl ,file},
+        config
+      );
 
-    dispatch({
-      type: NOTES_CREATE_SUCCESS,
-      payload: data,
-    });
-  } catch (error) {
-    const message =
-      error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message;
-    dispatch({
-      type: NOTES_CREATE_FAIL,
-      payload: message,
-    });
-  }
-};
+      dispatch({
+        type: NOTES_CREATE_SUCCESS,
+        payload: data,
+      });
+    } catch (error) {
+      const message =
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message;
+      dispatch({
+        type: NOTES_CREATE_FAIL,
+        payload: message,
+      });
+    }
+  };
 
 export const deleteNoteAction = (id) => async (dispatch, getState) => {
   try {
@@ -132,44 +122,42 @@ export const deleteNoteAction = (id) => async (dispatch, getState) => {
   }
 };
 
-export const updateNoteAction = (id, title, content, category) => async (
-  dispatch,
-  getState
-) => {
-  try {
-    dispatch({
-      type: NOTES_UPDATE_REQUEST,
-    });
+export const updateNoteAction =
+  (id, title, content, category) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: NOTES_UPDATE_REQUEST,
+      });
 
-    const {
-      userLogin: { userInfo },
-    } = getState();
+      const {
+        userLogin: { userInfo },
+      } = getState();
 
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    };
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
 
-    const { data } = await axios.put(
-      `/api/courses/${id}`,
-      { title, content, category },
-      config
-    );
+      const { data } = await axios.put(
+        `/api/courses/${id}`,
+        { title, content, category },
+        config
+      );
 
-    dispatch({
-      type: NOTES_UPDATE_SUCCESS,
-      payload: data,
-    });
-  } catch (error) {
-    const message =
-      error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message;
-    dispatch({
-      type: NOTES_UPDATE_FAIL,
-      payload: message,
-    });
-  }
-};
+      dispatch({
+        type: NOTES_UPDATE_SUCCESS,
+        payload: data,
+      });
+    } catch (error) {
+      const message =
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message;
+      dispatch({
+        type: NOTES_UPDATE_FAIL,
+        payload: message,
+      });
+    }
+  };
