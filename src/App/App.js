@@ -9,10 +9,15 @@ import Navbar from "./../components/Header/HeaderAdmin/Navbar";
 import Home from "./../components/Header/Home/Home";
 import ProfileScreen from "./../components/pages/ProfileScreen/ProfileScreen.js";
 import CreateNote from "../components/pages/Client/MyCourses/CreateNote.js";
+import UpdateNote from "../components/pages/Client/MyCourses/UpdateNote.js";
 function App() {
   return (
     <Router>
       <Switch>
+        <Route path="/update/:id"
+        >
+          <UpdateNote />
+        </Route>
       <Route path="/client">
           <Client />
         </Route>

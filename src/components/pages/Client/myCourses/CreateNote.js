@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import ReactMarkdown from "react-markdown";
@@ -35,15 +35,15 @@ function CreateNote() {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(createNoteAction(title, content, category, imageUrl, file));
-    console.log(file);
 
-    if (!title || !content || !category || !imageUrl || !file) {
-      return;
-    } else {
-      setViewPdf(null);
-    }
+    dispatch(createNoteAction(title, content, category, imageUrl, file));
+
+    if (!title || !content || !category || !imageUrl || !file) return;
+history.push("/client")
+    resetHandler();
   };
+ 
+
   const [selectedFile, setSelectedFile] = useState();
   const [isFilePicked, setIsFilePicked] = useState(false);
 
@@ -94,11 +94,11 @@ function CreateNote() {
         let reader = new FileReader();
         reader.readAsDataURL(selectedFile);
         reader.onloadend = (e) => {
-          setPdfError("");
+          setPdfFileError("");
           setPdfFile(e.target.result);
         };
       } else {
-        setPdfError("Not a valid pdf: Please select only PDF");
+        setPdfFileError("Not a valid pdf: Please select only PDF");
         setPdfFile("");
       }
     } else {
@@ -107,7 +107,7 @@ function CreateNote() {
   };
 
   return (
-    //<MainScreen title="Create a Note">
+    <div className="container">
     <Card>
       <Card.Header>Create a new Note</Card.Header>
       <Card.Body>
@@ -191,14 +191,16 @@ function CreateNote() {
 
             {/* we will display error message in case user select some file
         other than pdf */}
-            {pdfError && <span className="text-danger">{pdfError}</span>}
+            {pdfFileError && (
+              <span className="text-danger">{pdfFileError}</span>
+            )}
           </Form.Group>
           <br></br>
           <h4>View PDF</h4>
           <div className="pdf-container">
             {/* show pdf conditionally (if we have one)  */}
             {file && (
-              <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.12.313/build/pdf.worker.min.js">
+              <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
                 <Viewer
                   fileUrl={file}
                   plugins={[defaultLayoutPluginInstance]}
@@ -223,7 +225,7 @@ function CreateNote() {
         Creating on - {new Date().toLocaleDateString()}
       </Card.Footer>
     </Card>
-    // </MainScreen>
+  </div>
   );
 }
 

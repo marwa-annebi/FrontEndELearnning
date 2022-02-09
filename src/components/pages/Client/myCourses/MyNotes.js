@@ -1,5 +1,13 @@
+import AddIcon from "@material-ui/icons/Add";
+import {
+  makeStyles,
+  
+} from "@material-ui/core";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
 import { React, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
+import ConfirmDialog from "../../../ConfirmDialog";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
@@ -10,20 +18,25 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { red } from "@mui/material/colors";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
+
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import { Link } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
 
 import { useDispatch, useSelector } from "react-redux";
+import CloseIcon from "@material-ui/icons/Close";
 
 import { deleteNoteAction, listNotes } from "../../../../actions/CourseAction";
 import ErrorMessage from "../../../ErrorMessage";
 import Loading from "../../../Loading";
 import { Button, Grid } from "@mui/material";
+
+import axios from "axios";
+import Notification from "../../../Notification";
+import controls from "../../../Controls/controls";
+import { Badge } from "react-bootstrap";
+
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
   return <IconButton {...other} />;
@@ -33,6 +46,13 @@ const ExpandMore = styled((props) => {
   transition: theme.transitions.create("transform", {
     duration: theme.transitions.duration.shortest,
   }),
+}));
+const useStyles = makeStyles((theme) => ({
+  
+  newButton: {
+
+    marginLeft:"50px"
+  },
 }));
 function MyNotes({ history, search }) {
   const dispatch = useDispatch();
@@ -47,19 +67,19 @@ function MyNotes({ history, search }) {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
-  // const noteDelete = useSelector((state) => state.noteDelete);
-  // const {
-  //   loading: loadingDelete,
-  //   error: errorDelete,
-  //   success: successDelete,
-  // } = noteDelete;
+  const noteDelete = useSelector((state) => state.noteDelete);
+  const {
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete,
+  } = noteDelete;
 
   const noteCreate = useSelector((state) => state.noteCreate);
-  const { success: successCreate } = noteCreate;
+  const { success: successCreate ,errorCreate} = noteCreate;
 
   // const noteUpdate = useSelector((state) => state.noteUpdate);
   // const { success: successUpdate } = noteUpdate;
-
+  const saveFile = () => {};
   useEffect(() => {
     dispatch(listNotes());
     if (!userInfo) {
@@ -69,33 +89,73 @@ function MyNotes({ history, search }) {
     dispatch,
     history,
     userInfo,
-    //successDelete,
+    successDelete,
     successCreate,
     //successUpdate,
   ]);
 
-  const deleteHandler = (id) => {
-    if (window.confirm("Are you sure?")) {
-      dispatch(deleteNoteAction(id));
-    }
-  };
   const [expanded, setExpanded] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const MyOptions = ["Edit Course", "Delete Course"];
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const open = Boolean(anchorEl);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    subTitle: "",
+  });
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
+  const deleteUser = async (id) => {
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
+    dispatch(deleteNoteAction(id));
+    dispatch(listNotes());
+
+    setNotify({
+      isOpen: true,
+      message: "Deleted Successfully",
+      type: "error",
+    });
+  };
+  const classes = useStyles();
+
   return (
     //<MainScreen title={`Welcome Back ${userInfo && userInfo.name}..`}>
-    <div>
-      {" "}
-      {userInfo.isTeacher && (
-        <Link to="/createnote">
-          <Button style={{ marginLeft: 10, marginBottom: 6 }} size="lg">
-            Create new Note
-          </Button>
-        </Link>
-      )}
-      <br />
+    <div style={{ marginTop: "50px" }}>
+      <div>
+        {userInfo.isTeacher && (
+          <Link to="/createnote">
+            <controls.Button
+            text="Add New Course"
+            variant="outlined"
+            startIcon={<AddIcon />}
+            className={classes.newButton}
+
+          />
+          </Link>
+        )}
+      </div>
+    
+
       {error && <ErrorMessage variant="danger">{error}</ErrorMessage>}
       {/* {errorDelete && (
         <ErrorMessage variant="danger">{errorDelete}</ErrorMessage>
@@ -105,93 +165,122 @@ function MyNotes({ history, search }) {
       <Grid
         container
         rowSpacing={0}
-        style={{ marginLeft: "50px" }}
+        style={{ marginLeft: "50px", marginTop: "50px" }}
         alignItems="center"
       >
-        {notes
-          // .filter((filteredNote) =>
-          //   filteredNote.title.toLowerCase().includes(search.toLowerCase())
-          // )
-          // .reverse()
-          ?.map((note, id) => (
-            <Grid item xs={4} style={{ marginBottom: "20px" }}>
-              <Card sx={{ maxWidth: 350 }}>
-                <CardHeader
-                  avatar={
-                    <Avatar
-                      sx={{ bgcolor: red[500] }}
-                      aria-label="recipe"
-                      src={userInfo.pic}
-                    ></Avatar>
-                  }
-                  action={
-                    <IconButton aria-label="settings">
+        {notes?.map((note, id) => (
+          <Grid item xs={4} style={{ marginBottom: "20px" }}>
+            <Card sx={{ maxWidth: 350 }} key={id}>
+              <CardHeader
+                avatar={
+                  <Avatar
+                    sx={{ bgcolor: red[500] }}
+                    aria-label="recipe"
+                    src={userInfo.pic}
+                  ></Avatar>
+                }
+                action={
+                  <div>
+                    <IconButton
+                      aria-label="more"
+                      onClick={handleClick}
+                      aria-haspopup="true"
+                      aria-controls="long-menu"
+                    >
                       <MoreVertIcon />
                     </IconButton>
-                  }
-                  title={note.title}
-                  subheader={new Date().toLocaleDateString()}
-                />
-                <CardMedia
-                  component="img"
-                  height="194"
-                  image={note.imageUrl}
-                  alt="Paella dish"
-                />
+                    <Menu
+                      anchorEl={anchorEl}
+                      keepMounted
+                      onClose={handleClose}
+                      open={open}
+                    >
+                      
+                        <MenuItem>
+                        <Button href={`/update/${note._id}`}>Edit Course  </Button></MenuItem>
+                    
+
+                        <MenuItem color="secondary">
+                        
+                      <Button
+                        onClick={() => {
+                          setConfirmDialog({
+                            isOpen: true,
+                            title: "Are you sure to delete this record?",
+                            subTitle: "You can't undo this operation",
+                            onConfirm: () => {
+                              deleteUser(note._id);
+                            },
+                          });
+                        }}
+                      >
+                     
+                          Delete Course
+                          </Button>
+                        </MenuItem>
+                    </Menu>
+                  </div>
+                }
+                title ={note.title}
+                subheader={new Date().toLocaleDateString()}
+              />
+              <CardMedia
+                component="img"
+                height="194"
+                image={note.imageUrl}
+                alt="Paella dish"
+              />
+              <CardContent>
+                <Typography variant="body2" color="text.secondary">
+     
+                      <Badge variant="success">
+                        Category - {note.category}
+                      </Badge>
+   
+                </Typography>
+              </CardContent>
+              <CardActions disableSpacing>
+                <ExpandMore
+                  expand={expanded}
+                  onClick={handleExpandClick}
+                  aria-expanded={expanded}
+                  aria-label="show more"
+                >
+                  <ExpandMoreIcon />
+                </ExpandMore>
+              </CardActions>
+              <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
-                  <Typography variant="body2" color="text.secondary">
-                    {note.category}
+                  {/* <Typography paragraph>Method:</Typography> */}
+                  <Typography paragraph>
+                    {note.content}
+                    <br />
+                    <a
+                      className="btn btn-primary cursor-pointer text-white"
+                      href={note.file}
+                      download={note.file}
+                    >
+                      Download
+                    </a>
+                    {/* console.log({note.file}) */}
                   </Typography>
                 </CardContent>
-                <CardActions disableSpacing>
-                  <IconButton aria-label="add to favorites">
-                    <FavoriteIcon />
-                  </IconButton>
-                  <IconButton aria-label="share">
-                    <ShareIcon />
-                  </IconButton>
-                  <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                  >
-                    <ExpandMoreIcon />
-                  </ExpandMore>
-                </CardActions>
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                  <CardContent>
-                    {/* <Typography paragraph>Method:</Typography> */}
-                    <Typography paragraph>
-                      {note.content}
-                      {/* <a href = {note.file} target = "_blank">Download Pdf</a> */}
-                      <a onClick={window.open(note.file)}> pdf </a>
-                    </Typography>
-                    {/* <Typography paragraph>
-            Heat oil in a (14- to 16-inch) paella pan or a large, deep skillet over
-            medium-high heat. Add chicken, shrimp and chorizo, and cook, stirring
-            occasionally until lightly browned, 6 to 8 minutes. Transfer shrimp to a
-            large plate and set aside, leaving chicken and chorizo in the pan. Add
-            pimentón, bay leaves, garlic, tomatoes, onion, salt and pepper, and cook,
-            stirring often until thickened and fragrant, about 10 minutes. Add
-            saffron broth and remaining 4 1/2 cups chicken broth; bring to a boil.
-          </Typography>
-          <Typography paragraph>
-            Add rice and stir very gently to distribute. Top with artichokes and
-            peppers, and cook without stirring, until most of the liquid is absorbed,
-            15 to 18 minutes. Reduce heat to medium-low, add reserved shrimp and
-            mussels, tucking them down into the rice, and cook again without
-            stirring, until mussels have opened and rice is just tender, 5 to 7
-            minutes more. (Discard any mussels that don’t open.)
-          </Typography>
-          <Typography>
-            Set aside off of the heat to let rest for 10 minutes, and then serve.
-          </Typography> */}
-                  </CardContent>
-                </Collapse>
-              </Card>
-            </Grid>
-          ))}
+              </Collapse>
+            </Card>
+            {/* <DownloadLink
+              label="Download"
+              filename="fileName.txt"
+              exportFile= {note.file}
+            />{" "} */}
+            {/* <Link to={note.file} target="_blank" download>Download</Link> */}
+            {/* <Button onClick={saveAs(note.file, "example.pdf")}>download</Button> */}
+          </Grid>
+        ))}
+        <Notification notify={notify} setNotify={setNotify} />
+        <ConfirmDialog
+          confirmDialog={confirmDialog}
+          setConfirmDialog={setConfirmDialog}
+        />
       </Grid>
     </div>
   );
